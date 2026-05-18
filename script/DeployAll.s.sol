@@ -42,6 +42,7 @@ contract DeployAll is Script {
         // Compute future addresses based on nonce.
         // N+0 chipRegistry, N+1 jobProver, N+2 emission, N+3 miningPool, N+4 triToken
         address predictedTriToken = vm.computeCreateAddress(deployer, nonce + 4);
+        uint256 genesis = block.timestamp;
 
         vm.startBroadcast(pk);
 
@@ -54,14 +55,14 @@ contract DeployAll is Script {
         console.log("JobProver           :", address(prover));
 
         // ─── N+2  EmissionController ───────────────────────────────────────
-        EmissionController emission = new EmissionController();
+        EmissionController emission = new EmissionController(genesis);
         console.log("EmissionController  :", address(emission));
 
         // ─── N+3  MiningPool (gets predicted TriToken address) ─────────────
         MiningPool pool = new MiningPool(
             predictedTriToken,
             address(registry),
-            block.timestamp        // GENESIS
+            genesis
         );
         console.log("MiningPool          :", address(pool));
 
