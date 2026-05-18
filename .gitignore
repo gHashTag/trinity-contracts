@@ -1,7 +1,11 @@
 # Foundry
 out/
 cache/
-broadcast/
+
+# Broadcast — keep deployment receipts on-chain audit trail,
+# but ignore local-only dry-runs and sensitive cache.
+broadcast/*/dry-run/
+broadcast/.last_run.json
 
 # Dependencies
 lib/
