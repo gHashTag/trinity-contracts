@@ -163,6 +163,36 @@ contract ChipRegistryV2Test is Test {
         assertFalse(registry.isRegistered(chipId), "slashed chip stops counting");
     }
 
+    // ── the enrolment policy, which is load-bearing outside this contract ───
+
+    /// @dev One enrolment per device, permanently - including after a slash. The
+    ///      key generator that sits behind this registry needs a debiasing step,
+    ///      and the debiasing methods that survive a second enrolment cannot carry
+    ///      a 128-bit key. So a second enrolment is not a policy preference here;
+    ///      it is a hole in the key generator. Clearing the record on slash, or
+    ///      adding an unregister path, would look like tidying up and would open it.
+    function test_slashedChipCanNeverReRegister() public {
+        bytes memory sig = _sign(chipKey, chipId, registrant, 1);
+        vm.prank(registrant);
+        registry.registerChip(chipId, 1, 0x47C0, 1, sig);
+
+        vm.prank(registrant);
+        registry.slashChip(chipId, "caught cheating");
+        assertFalse(registry.isRegistered(chipId), "slashed chip is not registered");
+
+        // A fresh nonce and a valid signature must still be refused.
+        bytes memory sig2 = _sign(chipKey, chipId, registrant, 2);
+        vm.prank(registrant);
+        vm.expectRevert(ChipRegistryV2.AlreadyRegistered.selector);
+        registry.registerChip(chipId, 1, 0x47C0, 2, sig2);
+
+        // And by a different submitter, in case the record were keyed on attestor.
+        bytes memory sig3 = _sign(chipKey, chipId, stranger, 3);
+        vm.prank(stranger);
+        vm.expectRevert(ChipRegistryV2.AlreadyRegistered.selector);
+        registry.registerChip(chipId, 1, 0x47C0, 3, sig3);
+    }
+
     // ── fuzz: no identifier registers without its own key ───────────────────
 
     function testFuzz_arbitraryKeyCannotRegisterArbitraryChip(

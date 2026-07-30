@@ -37,6 +37,35 @@ import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
  *      the holder of a chip's key may register that chip". That is the whole
  *      claim being made here.
  *
+ * @dev Enrolment policy: one enrolment per device, permanently.
+ *
+ *      This was already the behaviour and is now stated as a requirement, because
+ *      it turns out to be load-bearing outside the contract.
+ *
+ *      A physically unclonable function's responses are biased, and a key generator
+ *      built on biased responses needs a debiasing step. Of the debiasing methods
+ *      in the literature, three of four are explicitly not reusable: enrolling the
+ *      same device a second time leaks more than one enrolment does, because the
+ *      debiasing step is stochastic and bit errors between enrolments shift which
+ *      response pairs are retained. Only pair-output von Neumann with erasures is
+ *      reusable, and it requires an inner repetition code that cannot carry the
+ *      information a 128-bit key needs - not at any response entropy, since a
+ *      repetition code multiplies the code length while leaving its dimension
+ *      alone. So the reusable option is not merely expensive here; it does not
+ *      exist.
+ *
+ *      That leaves one enrolment per device as the only constructible policy, and
+ *      this contract must therefore never allow a second one. Two paths are closed:
+ *
+ *        - a registered chip cannot register again, by the AlreadyRegistered check
+ *        - a slashed chip cannot register again either, because slashing sets a
+ *          flag and does not clear registeredAt, so the same check still fires
+ *
+ *      The second is easy to break by a well-meaning change - clearing the record
+ *      on slash, or adding an unregister path, would read like tidying up and would
+ *      silently make the key generator insecure. `test_slashedChipCanNeverReRegister`
+ *      exists to stop that.
+ *
  * @dev Identifier scheme. The chip identifier is the chip's own address, left
  *      zero-padded into a bytes32. This makes the identifier self-authenticating:
  *      a signature recovers to an address, and the identifier being registered
