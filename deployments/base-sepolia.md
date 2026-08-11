@@ -47,8 +47,10 @@
 
 ## Mainnet Plan
 
-This Sepolia deployment is for testing. Mainnet deployment on **Base L2** scheduled
-for **Q2 2027** (post TT SKY26b silicon delivery, December 2026).
+This Sepolia deployment is for testing. Mainnet deployment on **Base L2** is
+**not scheduled**. It is gated on a silicon route, and no fabrication route is
+currently selected: the TT SKY26b order was cancelled and refunded in July 2026,
+so no chip will be delivered. No mainnet date can be given until a route exists.
 
 For mainnet:
 - Genesis timestamp will be set to actual silicon ship date
