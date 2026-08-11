@@ -5,7 +5,9 @@
 [![Supply: 7.625T TRI](https://img.shields.io/badge/Supply-7.625T_TRI_(3%5E27)-gold.svg)](#tokenomics)
 
 > **One TRI token = one possible state of the Trinity silicon kernel.**
-> Mining requires a physical TT SKY26b Trinity chip (Phi + Euler + Gamma).
+> Mining is **designed** to require a physical TT SKY26b Trinity chip
+> (Phi + Euler + Gamma). No such chip exists: the TT SKY26b order was cancelled
+> and refunded in July 2026, and no fabrication route is currently selected.
 > No chip, no TRI. Period.
 
 ---
